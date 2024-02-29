@@ -49,3 +49,4 @@ def disconnect(ssid: str = None):
 if __name__ == "__main__":
     
     disconnect()
+    connect_to('AutoConnectAP', 'Sandy@2023')
