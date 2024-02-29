@@ -42,8 +42,11 @@ def starting_threads():
 
 def main() : 
     starting_threads()
+    print("got ssid and password: ", home_ssid, " ", home_password)
     disconnect()
     connect_to(home_ssid, home_password)
+
+    print("connected to ", home_ssid, " with password ", home_password)
     
 
 
