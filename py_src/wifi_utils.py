@@ -32,8 +32,15 @@ def connect_to_saved(ssid: str):
     subprocess.call(['nmcli', 'c', 'up', ssid])
     return is_connected_to(ssid)
 
-def disconnect():
-    subprocess.call(['nmcli', 'd', 'disconnect'])
+def disconnect(ssid: str = None):
+    if ssid is None : 
+        ssid = what_wifi()
+        if ssid == '' : 
+            return False 
+    
+    subprocess.call(['sudo', 'nmcli', 'con', 'down', ssid])
+    return not is_connected_to(ssid)
 
 if __name__ == "__main__":
+    
     disconnect()
