@@ -20,7 +20,7 @@ def listen_to_serial(port, baudrate):
     ser.port = port
     ser.open()
 
-    while home_ssid is None and home_password is None:
+    while home_ssid is None or home_password is None:
         l = ser.readline().decode('utf-8')
         print("received: ", l)
         if "ssid" in l.lower():
