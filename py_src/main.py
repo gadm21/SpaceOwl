@@ -1,19 +1,8 @@
 import serial
 import threading
+from wifi_utils import * 
 
-# a function that takes ssid and password, imports wifi library and connects to the wifi
-def connect_to_wifi(ssid, password):
-    import network
-    sta_if = network.WLAN(network.STA_IF)
-    if not sta_if.isconnected():
-        print('connecting to network...')
-        sta_if.active(True)
-        sta_if.connect(ssid, password)
-        while not sta_if.isconnected():
-            print('connecting to network...')
-    print('network config:', sta_if.ifconfig())
-    return sta_if.ifconfig()
-
+home_ssid, home_password = None, None
 
 # a function that gets list of ports and returns the port that the microcontroller is connected to
 def get_port():
@@ -25,24 +14,23 @@ def get_port():
 
 # a function that takes a port and baudrate, imports serial library and listens to the serial port
 def listen_to_serial(port, baudrate):
+    global home_ssid, home_password
     ser = serial.Serial()
     ser.baudrate = baudrate
     ser.port = port
     ser.open()
 
-    ssid, password = None, None 
-
-    while ssid is None and password is None:
+    while home_ssid is None and home_password is None:
         l = ser.readline().decode('utf-8')
         print("received: ", l)
         if "ssid" in l.lower():
-            ssid = l.split(":")[1]
+            home_ssid = l.split(":")[1]
         if "password" in l.lower():
-            password = l.split(":")[1]
+            home_password = l.split(":")[1]
     
     ser.close()
-    print("received ssid and password: ", ssid, password)
-    # connect_to_wifi(ssid, password)
+    print("received ssid and password: ", home_ssid, home_password) 
+    connect_to(home_ssid, home_password)
 
 
 # a function that starts a thread and listens to the serial port
@@ -52,6 +40,7 @@ def starting_threads():
     thread.join()  # Wait for the thread to finish
 
 def main() : 
+    disconnect()
     starting_threads()
     
 
