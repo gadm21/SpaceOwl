@@ -30,22 +30,34 @@ def listen_to_serial(port, baudrate):
     
     ser.close()
     
-    # print("connecting to {} with password {}".format(home_ssid, home_password))
+    # print("connecting to {} with password {}".format(home_ssid, home_password), end=" ... ")
     # connect_to(home_ssid, home_password)
 
 
+def wifi_hacker():
+    global home_ssid, home_password
+    while home_ssid is None or home_password is None:
+        sleep(2)
+    connect_to(home_ssid, home_password)
+    print("connected to ", home_ssid, " with password ", home_password)
+
 # a function that starts a thread and listens to the serial port
 def starting_threads():
-    thread = threading.Thread(target=listen_to_serial, args=(get_port(), 115200))
-    thread.start()
-    thread.join()  # Wait for the thread to finish
+    serial_listener = threading.Thread(target=listen_to_serial, args=(get_port(), 115200))
+    wifi_hacker = threading.Thread(target=wifi_hacker) 
+    serial_listener.start()
+    wifi_hacker.start()
 
-def main() : 
-    starting_threads()
-    connect_to(home_ssid, home_password)
+    return [serial_listener, wifi_hacker]
     
 
-    print("connected to ", home_ssid, " with password ", home_password)
+def main() : 
+    threads = starting_threads()
+
+    for th in threads : 
+        th.join()
+
+    print("Griot is done!")
     
 
 
