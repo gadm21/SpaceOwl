@@ -24,9 +24,9 @@ def listen_to_serial(port, baudrate):
         l = ser.readline().decode('utf-8')
         print("received: ", l)
         if "ssid" in l.lower():
-            home_ssid = l.split(":")[1]
+            home_ssid = l.split(":")[1].strip()
         if "password" in l.lower():
-            home_password = l.split(":")[1]
+            home_password = l.split(":")[1].strip()
     
     ser.close()
     print("received ssid and password: ", home_ssid, home_password) 
