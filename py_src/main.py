@@ -22,16 +22,16 @@ def listen_to_serial(port, baudrate):
 
     while home_ssid is None or home_password is None:
         l = ser.readline().decode('utf-8')
-        print("received: ", l)
+        
         if "ssid" in l.lower():
             home_ssid = l.split(":")[1].strip()
         if "password" in l.lower():
             home_password = l.split(":")[1].strip()
     
     ser.close()
-    print("received ssid and password: ", home_ssid, home_password) 
-    print("connecting to {} with password {}".format(home_ssid, home_password))
-    connect_to(home_ssid, home_password)
+    
+    # print("connecting to {} with password {}".format(home_ssid, home_password))
+    # connect_to(home_ssid, home_password)
 
 
 # a function that starts a thread and listens to the serial port
@@ -42,24 +42,8 @@ def starting_threads():
 
 def main() : 
     starting_threads()
-    print("got ssid and password: ", home_ssid, " ", home_password)
-    sleep(5) 
-    print("disconnecting from current wifi")
-    disconnect()
-    sleep(5)
-    print("______")
-    print("ssid") 
-    for i, h in enumerate(home_ssid) : 
-        print(i, ":", h)
-    print("______")
-    print("password")
-    for i, p in enumerate(home_password) : 
-        print(i, ":", p)
-    print("______")
-    sleep(5)
-    print("connecting to ", home_ssid, " with password ", home_password)
     connect_to(home_ssid, home_password)
-    sleep(5)
+    
 
     print("connected to ", home_ssid, " with password ", home_password)
     
