@@ -47,6 +47,16 @@ def main() :
     print("disconnecting from current wifi")
     disconnect()
     sleep(5)
+    print("______")
+    print("ssid") 
+    for i, h in enumerate(home_ssid) : 
+        print(i, ":", h)
+    print("______")
+    print("password")
+    for i, p in enumerate(home_password) : 
+        print(i, ":", p)
+    print("______")
+    sleep(5)
     print("connecting to ", home_ssid, " with password ", home_password)
     connect_to(home_ssid, home_password)
     sleep(5)
