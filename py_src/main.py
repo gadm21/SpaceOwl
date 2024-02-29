@@ -1,7 +1,7 @@
 import serial
 import threading
 from wifi_utils import * 
-
+from time import sleep
 home_ssid, home_password = None, None
 
 # a function that gets list of ports and returns the port that the microcontroller is connected to
@@ -43,8 +43,13 @@ def starting_threads():
 def main() : 
     starting_threads()
     print("got ssid and password: ", home_ssid, " ", home_password)
+    sleep(5) 
+    print("disconnecting from current wifi")
     disconnect()
+    sleep(5)
+    print("connecting to ", home_ssid, " with password ", home_password)
     connect_to(home_ssid, home_password)
+    sleep(5)
 
     print("connected to ", home_ssid, " with password ", home_password)
     
