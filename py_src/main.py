@@ -43,12 +43,12 @@ def wifi_hacker():
 
 # a function that starts a thread and listens to the serial port
 def starting_threads():
-    serial_listener = threading.Thread(target=listen_to_serial, args=(get_port(), 115200))
-    wifi_hacker = threading.Thread(target=wifi_hacker) 
-    serial_listener.start()
-    wifi_hacker.start()
+    serial_listener_thread = threading.Thread(target=listen_to_serial, args=(get_port(), 115200))
+    wifi_hacker_thread = threading.Thread(target=wifi_hacker)  
+    serial_listener_thread.start()
+    wifi_hacker_thread.start()
 
-    return [serial_listener, wifi_hacker]
+    return [serial_listener_thread, wifi_hacker_thread]
     
 
 def main() : 
