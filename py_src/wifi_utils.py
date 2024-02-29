@@ -36,6 +36,4 @@ def disconnect():
     subprocess.call(['nmcli', 'd', 'disconnect'])
 
 if __name__ == "__main__":
-    print(what_wifi())
-    print(scan_wifi())
-    print(is_connected_to('BTHub5-2G8B'))
+    disconnect()
