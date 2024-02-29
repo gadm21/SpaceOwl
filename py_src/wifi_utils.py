@@ -28,7 +28,7 @@ def is_wifi_available(ssid: str):
 def connect_to(ssid: str, password: str):
     if not is_wifi_available(ssid):
         return False
-    subprocess.call(['nmcli', 'd', 'wifi', 'connect', ssid, 'password', password])
+    subprocess.call(['sudo', 'nmcli', 'd', 'wifi', 'connect', ssid, 'password', password])
     return is_connected_to(ssid)
 
 def connect_to_saved(ssid: str):
