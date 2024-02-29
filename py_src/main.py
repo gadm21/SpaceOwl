@@ -41,8 +41,9 @@ def starting_threads():
     thread.join()  # Wait for the thread to finish
 
 def main() : 
-    # disconnect()
     starting_threads()
+    disconnect()
+    connect_to(home_ssid, home_password)
     
 
 
