@@ -30,6 +30,7 @@ def listen_to_serial(port, baudrate):
     
     ser.close()
     print("received ssid and password: ", home_ssid, home_password) 
+    print("connecting to {} with password {}".format(home_ssid, home_password))
     connect_to(home_ssid, home_password)
 
 
@@ -40,7 +41,7 @@ def starting_threads():
     thread.join()  # Wait for the thread to finish
 
 def main() : 
-    disconnect()
+    # disconnect()
     starting_threads()
     
 
