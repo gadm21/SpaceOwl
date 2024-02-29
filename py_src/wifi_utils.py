@@ -16,7 +16,7 @@ def is_connected_to(ssid: str):
     return what_wifi() == ssid
 
 def scan_wifi():
-    process = subprocess.run(['nmcli', '-t', '-f', 'SSID,SECURITY,SIGNAL', 'dev', 'wifi'], stdout=subprocess.PIPE)
+    process = subprocess.run(['sudo', 'nmcli', '-t', '-f', 'SSID,SECURITY,SIGNAL', 'dev', 'wifi'], stdout=subprocess.PIPE)
     if process.returncode == 0:
         return process.stdout.decode('utf-8').strip().split('\n')
     else:
@@ -49,4 +49,4 @@ def disconnect(ssid: str = None):
 if __name__ == "__main__":
     
     disconnect()
-    connect_to('AutoConnectAP', 'Sandy@2023')
+    connect_to('43 Hillsmount', 'Sandy@2023')

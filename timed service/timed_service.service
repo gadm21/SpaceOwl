@@ -1,0 +1,7 @@
+
+[Unit] 
+Description: A timed service !
+
+[Service] 
+Type = simple 
+ExecStart = /usr/bin/python /home/pi/Desktop/HeleLora/src/services/timed_service/timed_service.py
