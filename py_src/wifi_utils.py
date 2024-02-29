@@ -2,10 +2,15 @@ import subprocess
 
 def what_wifi():
     process = subprocess.run(['nmcli', '-t', '-f', 'ACTIVE,SSID', 'dev', 'wifi'], stdout=subprocess.PIPE)
-    if process.returncode == 0:
-        return process.stdout.decode('utf-8').strip().split(':')[1]
-    else:
-        return ''
+    ssid = '' 
+    for line in process.stdout.decode('utf-8').strip().split('\n'):
+        if 'yes' in line.lower().split(':')[0]:
+            ssid = line.split(':')[1]
+    return ssid
+    # if process.returncode == 0:
+    #     return process.stdout.decode('utf-8').strip().split(':')[1]
+    # else:
+    #     return ''
 
 def is_connected_to(ssid: str):
     return what_wifi() == ssid
