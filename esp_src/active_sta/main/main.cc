@@ -192,6 +192,7 @@ void config_print() {
     printf("SHOULD_COLLECT_ONLY_LLTF: %d\n", SHOULD_COLLECT_ONLY_LLTF);
     printf("SEND_CSI_TO_SERIAL: %d\n", SEND_CSI_TO_SERIAL);
     printf("SEND_CSI_TO_SD: %d\n", SEND_CSI_TO_SD);
+    
     printf("-----------------------\n");
     printf("\n\n\n\n\n\n\n\n");
 }
