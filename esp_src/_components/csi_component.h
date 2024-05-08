@@ -18,9 +18,15 @@ SemaphoreHandle_t mutex = xSemaphoreCreateMutex();
 
 void _wifi_csi_cb(void *ctx, wifi_csi_info_t *data) {
     xSemaphoreTake(mutex, portMAX_DELAY);
+    
+    // print the received data 
+    
+    
+    
     std::stringstream ss;
 
     wifi_csi_info_t d = data[0];
+    
     char mac[20] = {0};
     sprintf(mac, "%02X:%02X:%02X:%02X:%02X:%02X", d.mac[0], d.mac[1], d.mac[2], d.mac[3], d.mac[4], d.mac[5]);
 

@@ -1,3 +1,7 @@
+
+
+// C:\Users\ggad\"OneDrive - The University of Western Ontario"\Desktop\gad\projects\SpaceOwl\esp_src\active_ap\main
+
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -10,6 +14,7 @@
 #include "esp_log.h"
 #include "nvs_flash.h"
 #include "esp_mac.h"
+#include "esp32-hal-cpu.h" 
 
 #include "lwip/err.h"
 #include "lwip/sys.h"
@@ -170,7 +175,13 @@ TaskHandle_t xHandle = NULL;
 
 void vTask_socket_transmitter_sta_loop(void *pvParameters) {
     for (;;) {
-        socket_transmitter_sta_loop(&is_wifi_connected);
+        socket_transmitter_sta_loop(&is_wifi_connected, (char *) "1\n");
+    }
+}
+
+void vTask_socket_transmitter_sta_loop2(void *pvParameters) {
+    for (;;) {
+        socket_transmitter_sta_loop(&is_wifi_connected, (char *) "2\n");
     }
 }
 
@@ -208,6 +219,22 @@ extern "C" void app_main() {
         printf("CSI will not be collected. Check `idf.py menuconfig  # > ESP32 CSI Tool Config` to enable CSI");
     #endif
 
-    xTaskCreatePinnedToCore(&vTask_socket_transmitter_sta_loop, "socket_transmitter_sta_loop",
-                            10000, (void *) &is_wifi_connected, 1, &xHandle, 1);
+    // print the cpu frequency, frequency of the XTAL, the APB clock frequency, the free heap memory, and the number of cores. 
+    printf("CPU Freq: %lu MHz\n", getCpuFrequencyMhz());
+    printf("-----------------------\n");
+
+    // set the cpu frequency to 240 MHz
+    setCpuFrequencyMhz(240);
+
+    printf("CPU Freq: %lu MHz\n", getCpuFrequencyMhz());
+    printf("-----------------------\n");
+
+
+
+    xTaskCreatePinnedToCore(&vTask_socket_transmitter_sta_loop, "socket_transmitter_sta1",
+                            7000, (void *) &is_wifi_connected, 1, &xHandle, 1); // core 1
+
+    xTaskCreatePinnedToCore(&vTask_socket_transmitter_sta_loop2, "socket_transmitter_sta2",
+                            7000, (void *) &is_wifi_connected, 2, &xHandle, 0); // core 0
+
 }
