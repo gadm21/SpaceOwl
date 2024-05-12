@@ -10,8 +10,8 @@
 #include "esp_log.h"
 #include "nvs_flash.h"
 #include "esp_mac.h"
-#include "Arduino.h"
-#include "esp32-hal-cpu.h" 
+// #include "Arduino.h" 
+// #include "esp32-hal-cpu.h" 
 
 #include "lwip/err.h"
 #include "lwip/sys.h"
@@ -179,6 +179,8 @@ void config_print() {
 
 
 extern "C" void app_main() {
+
+    // initArduino();
     config_print();
     nvs_init();
     sd_init();
@@ -190,13 +192,13 @@ extern "C" void app_main() {
     #endif
 
     // print the cpu frequency, frequency of the XTAL, the APB clock frequency, the free heap memory, and the number of cores. 
-    printf("CPU Freq: %lu MHz\n", getCpuFrequencyMhz());
+    // printf("CPU Freq: %lu MHz\n", getCpuFrequencyMhz());
     // printf("-----------------------\n");
 
     // // set the cpu frequency to 240 MHz
-    setCpuFrequencyMhz(240);
+    // setCpuFrequencyMhz(240);
 
-    printf("CPU Freq: %lu MHz\n", getCpuFrequencyMhz());
+    // printf("CPU Freq: %lu MHz\n", getCpuFrequencyMhz());
     // printf("-----------------------\n");
 
 

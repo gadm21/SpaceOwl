@@ -44,43 +44,41 @@ def carrier_plot(amp):
     fig.canvas.flush_events()
     plt.show()
 
-macs = dict()
+
 def process(res):
-    # Parser
-    all_data = res.split(',')
-    mac = re.findall(r"([0-9A-Fa-f][:-][0-9A-Fa-f]{2}[:-][0-9A-Fa-f]{2}[:-][0-9A-Fa-f]{2}[:-][0-9A-Fa-f]{2}[:-][0-9A-Fa-f]{2})", all_data[2])[0]
-    if mac not in macs:
-        macs[mac] = 1
-    else:
-        macs[mac] += 1
-    print(macs)
     
-    csi_data = all_data[25].split(" ")
-    csi_data[0] = csi_data[0].replace("[", "")
-    csi_data[-1] = csi_data[-1].replace("]", "")
 
-    csi_data.pop()
-    csi_data = [int(c) for c in csi_data if c]
-    imaginary = []
-    real = []
-    for i, val in enumerate(csi_data):
-        if i % 2 == 0:
-            imaginary.append(val)
-        else:
-            real.append(val)
+    try : 
 
-    csi_size = len(csi_data)
-    amplitudes = []
-    phases = []
-    if len(imaginary) > 0 and len(real) > 0:
-        for j in range(int(csi_size / 2)):
-            amplitude_calc = math.sqrt(imaginary[j] ** 2 + real[j] ** 2)
-            phase_calc = math.atan2(imaginary[j], real[j])
-            amplitudes.append(amplitude_calc)
-            phases.append(phase_calc)
+        all_data = res.split(',')
+        mac = re.findall(r"([0-9A-Fa-f]{2}[:-][0-9A-Fa-f]{2}[:-][0-9A-Fa-f]{2}[:-][0-9A-Fa-f]{2}[:-][0-9A-Fa-f]{2}[:-][0-9A-Fa-f]{2})", all_data[2])[0]
+        if mac != 'A0:A3:B3:AA:76:38' : 
+            return 
 
-        perm_phase.append(phases)
-        perm_amp.append(amplitudes)
+        other_data = np.array(all_data[3: -1], dtype = np.float32)
+        
+        csi_data = np.array(all_data[-1].split(" ")[1: -1], dtype=np.int32)
+        # csi_data = [int(c) for c in csi_data if c]
+        real = csi_data[::2]
+        imaginary = csi_data[1::2]
+
+        common_len = min(len(real), len(imaginary))
+        real = real[:common_len]
+        imaginary = imaginary[:common_len]
+
+        # Calculate amplitude and phase
+        amps = np.sqrt(np.square(real) + np.square(imaginary)) 
+        phases = np.arctan2(imaginary, real)
+        
+    except Exception as e : 
+        print(e)
+        return
+
+    perm_phase.append(phases)
+    perm_amp.append(amps)
+
+
+
 
 print_until_first_csi_line()
 

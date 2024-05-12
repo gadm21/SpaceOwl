@@ -11,6 +11,7 @@ def get_data_files(data_dir = 'data/'):
     return [os.path.join(data_dir, f) for f in os.listdir(data_dir) if f.endswith('.csv')]
 
 
+
 def generate_labels(data) : 
     # data is a list of length: n_classes and each element has shape (n_s, n_t, n_f)
     n_classes = len(data)
@@ -21,20 +22,22 @@ def generate_labels(data) :
     return labels
 
 
+
 def split_csi(data, interval_len = 100) : 
     # data shape is (n_t, n_f)
     num_intervals = len(data) // interval_len
     data = np.array_split(data[:num_intervals * interval_len], num_intervals)
     return np.array(data) 
 
-def parse_csi(filename, csi_only = False):
+
+
+def parse_csi(filename, macs = None, csi_only = False):
     print("reading file: ", filename)
     
+    csi = []
+    found_macs = []
+    corrupt_lines = 0
     with open(filename, 'r') as f:
-        csi = []
-        macs = []
-        mac_to_id = defaultdict(int)
-        corrupt_lines = 0
         for j, l in enumerate(f.readlines()):
             imaginary = []
             real = []
@@ -45,11 +48,13 @@ def parse_csi(filename, csi_only = False):
             try : 
                 csi_string = re.findall(r"\[(.*)\]", l)[0]
                 
-                mac = re.findall(r"([0-9A-Fa-f][:-][0-9A-Fa-f]{2}[:-][0-9A-Fa-f]{2}[:-][0-9A-Fa-f]{2}[:-][0-9A-Fa-f]{2}[:-][0-9A-Fa-f]{2})", l)[0]
-                
+                mac = re.findall(r"([0-9A-Fa-f]{2}[:-][0-9A-Fa-f]{2}[:-][0-9A-Fa-f]{2}[:-][0-9A-Fa-f]{2}[:-][0-9A-Fa-f]{2}[:-][0-9A-Fa-f]{2})", l)[0]
+  
+                if macs is not None and mac not in macs:
+                    continue
                 csi_raw = [int(x) for x in csi_string.split(" ") if x != '']
-                _ = mac_to_id[mac]
-                macs.append(mac_to_id[mac])
+                
+                found_macs.append(mac)
             except :
                 corrupt_lines += 1
                 continue
@@ -65,14 +70,16 @@ def parse_csi(filename, csi_only = False):
             for i in range(int(len(csi_raw) //2 )):
                 amp = sqrt(imaginary[i] ** 2 + real[i] ** 2)
                 phase = atan2(imaginary[i], real[i])
-                csi.append((amp, phase, mac_to_id[mac]))
+                csi.append((amp, phase))
         if corrupt_lines > 200 : 
             raise ValueError(f"{corrupt_lines} many corrupt lines in file {filename}")
-        csi = np.array(csi)
-        macs = np.array(macs)
+        
+    csi = np.array(csi)
+    found_macs = np.array(found_macs)
     if csi_only : 
         return csi
-    return csi, macs
+    return csi, found_macs
+
 
 
 if __name__ == "__main__":

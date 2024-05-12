@@ -18,6 +18,7 @@ class CSIModel(nn.Module):
 
 import torch.nn.functional as F
 
+
 class ComplexCSIModel(nn.Module):
     def __init__(self, input_size, hidden_size, num_layers, output_size, dropout_rate=0.2):
         super(ComplexCSIModel, self).__init__()
@@ -55,6 +56,7 @@ class ComplexCSIModel(nn.Module):
         return output
 
 
+
 def train(model, train_loader, criterion, optimizer, num_epochs=10):
     model.train()
     
@@ -69,6 +71,8 @@ def train(model, train_loader, criterion, optimizer, num_epochs=10):
             running_loss += loss.item()
         
         print(f'Epoch {epoch+1}/{num_epochs}, Loss: {running_loss/len(train_loader)}')
+
+
 
 def evaluate(model, val_loader):
     model.eval()
