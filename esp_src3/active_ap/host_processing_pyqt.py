@@ -39,6 +39,8 @@ DIFF_THRESHOLD = 3
 TARGET_NODE = 0
 baseline_alpha = 0.95
 test_counter = 0
+
+
 # compute diff, record multiple records, corr, test peak.
 def crossing_decction(new_csi_data):
     global csi_data_log
@@ -79,6 +81,7 @@ def parse_data_line (line, data_len) :
 
     return data
 
+
 def add_new_node (pyqt_app, node_id):
     if node_id == 0:
         return
@@ -86,8 +89,6 @@ def add_new_node (pyqt_app, node_id):
     csi_points_list.append( np.zeros(CSI_LEN) )
     # new rssi curve
     curve_rssi_list.append( pyqt_app.pw1.plot(pen=(node_id, 3)) ) # append SNR curve
-
-
     # new csi curve
     curve_csi_list.append( pyqt_app.pw2.plot(pen=(node_id, 3)) ) # append SNR curve
 
@@ -124,6 +125,7 @@ def parse_data_packet (pyqt_app, data) :
             raw_csi_len = int(items[1][tmp_pos+6:])
             # parse csi raw data
             raw_csi_data = parse_data_line(lines[l_count + 1], raw_csi_len)
+
     # a newline to separate packets
     print()
 
@@ -185,7 +187,7 @@ def update_esp32_data(pyqt_app):
     # only process HT(802.11 n) and 40 MHz frames without stbc
     # Check https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/wifi.html#wi-fi-channel-state-information
     # sig-mod, channel bandwidth, stbc fields 
-    if rx_ctrl_data[2] != 1 or rx_ctrl_data[4] != 1 or rx_ctrl_data[8] != 0:
+    if rx_ctrl_data[2] != 1 or rx_ctrl_data[4] != 1 or rx_ctrl_data[8] != 0 :
         return -1
     # you can support more formats by changing cook_csi_data() function
     

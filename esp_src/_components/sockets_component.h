@@ -13,15 +13,10 @@
 #include "esp_wifi.h"
 #include <esp_http_server.h>
 
-// char *data = (char *) "1\n";
+char *data = (char *) "1\n";
 
-void socket_transmitter_sta_loop(bool (*is_wifi_connected)(), char * data) {
+void socket_transmitter_sta_loop(bool (*is_wifi_connected)()) {
     int socket_fd = -1;
-    // get the IP and mac address of the ESP32
-    uint8_t mac[6];
-    esp_read_mac(mac, ESP_MAC_WIFI_STA);
-
-
     while (1) {
         close(socket_fd);
         char *ip = (char *) "192.168.4.1";
@@ -49,8 +44,7 @@ void socket_transmitter_sta_loop(bool (*is_wifi_connected)(), char * data) {
             continue;
         }
 
-        printf("sending frames from MAC Address: %02x:%02x:%02x:%02x:%02x:%02x       data: %s\n\n", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5], data);
-
+        printf("sending frames.\n");
         double lag = 0.0;
         while (1) {
             double start_time = get_steady_clock_timestamp();
@@ -62,7 +56,10 @@ void socket_transmitter_sta_loop(bool (*is_wifi_connected)(), char * data) {
             if (sendto(socket_fd, &data, strlen(data), 0, (const struct sockaddr *) &caddr, sizeof(caddr)) !=
                 strlen(data)) {
                 vTaskDelay(1);
+                printf("ERROR: sendto error \n");
                 continue;
+            }else {
+                printf("sent data\n");
             }
 
 #if defined CONFIG_PACKET_RATE && (CONFIG_PACKET_RATE > 0)

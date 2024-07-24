@@ -3,6 +3,7 @@
 #include "freertos/task.h"
 #include "freertos/event_groups.h"
 #include "esp_system.h"
+
 #include "esp_spi_flash.h"
 #include "esp_wifi.h"
 #include "esp_event.h"
@@ -38,9 +39,10 @@
 #define EXAMPLE_ESP_MAXIMUM_RETRY   10
 
 #define CSI_QUEUE_SIZE             32
-// #define HOST_IP_ADDR               "192.168.4.2" // the ip addr of the host computer.
 #define HOST_UDP_PORT              8848
 
+#define TARGET_HOSTNAME            "GadGad-MacAir" // put your computer mDNS name here.
+// #define HOST_IP_ADDR               "192.168.4.2" // the ip addr of the host computer.
 
 
 static const char *TAG = "CSI collection (Client)";
@@ -316,7 +318,7 @@ int setup_udp_socket (struct sockaddr_in *dest_addr) {
     int ip_protocol = 0;
 
     if (target_host_ipv4 == NULL) {
-        while ( query_mdns_host("RuichunMacBook-Pro") < 0) {
+        while ( query_mdns_host(TARGET_HOSTNAME) < 0) {
             ESP_LOGW(TAG, "No target host found, try again ...");
         }
     }

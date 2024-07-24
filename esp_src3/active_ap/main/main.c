@@ -2,6 +2,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_system.h"
+// #include "esp_mac.h"
 #include "esp_spi_flash.h"
 #include "esp_wifi.h"
 #include "esp_event.h"
@@ -35,7 +36,7 @@
 
 #define CSI_QUEUE_SIZE             32
 // #define HOST_IP_ADDR               "192.168.4.2" // the ip addr of the host computer.
-#define TARGET_HOSTNAME            "RuichunMacBook-Pro" // put your computer mDNS name here.
+#define TARGET_HOSTNAME            "GadGad-MacAir" // put your computer mDNS name here.
 #define HOST_UDP_PORT              8848
 
 
@@ -46,12 +47,10 @@ static char *target_host_ipv4 = NULL;
 
 static xQueueHandle csi_info_queue;
 
-static const uint8_t PEER_NODE_NUM = 4; // self is also included.
+static const uint8_t PEER_NODE_NUM = 2; // self is also included.
 static const char peer_mac_list[8][20] = {
-    "3c:61:05:4c:36:cd", // esp32 official dev board 0, as soft ap
-    "3c:61:05:4c:3c:28", // esp32 official dev board 1
-    "08:3a:f2:6c:d3:bc", // esp32 unofficial dev board 0
-    "08:3a:f2:6e:05:94", // esp32 unofficial dev board 1
+    "a0:a3:b3:aa:76:38", // esp32 official dev board 0, as soft ap
+    "a0:a3:b3:80:1d:8c"
 };
 
 static void csi_handler_task(void *pvParameter);

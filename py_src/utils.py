@@ -34,11 +34,13 @@ def split_csi(data, interval_len = 100) :
 def parse_csi(filename, macs = None, csi_only = False):
     print("reading file: ", filename)
     
-    csi = []
+    csis = []
     found_macs = []
     corrupt_lines = 0
+    lines = 0
     with open(filename, 'r') as f:
         for j, l in enumerate(f.readlines()):
+            lines += 1
             imaginary = []
             real = []
             amplitudes = []
@@ -53,7 +55,7 @@ def parse_csi(filename, macs = None, csi_only = False):
                 if macs is not None and mac not in macs:
                     continue
                 csi_raw = [int(x) for x in csi_string.split(" ") if x != '']
-                
+                assert len(csi_raw) == 384
                 found_macs.append(mac)
             except :
                 corrupt_lines += 1
@@ -67,18 +69,25 @@ def parse_csi(filename, macs = None, csi_only = False):
                     real.append(csi_raw[i])
 
             # Transform imaginary and real into amplitude and phase
+            amps = np.zeros(len(imaginary))
+            phases = np.zeros(len(imaginary))
             for i in range(int(len(csi_raw) //2 )):
                 amp = sqrt(imaginary[i] ** 2 + real[i] ** 2)
                 phase = atan2(imaginary[i], real[i])
-                csi.append((amp, phase))
-        if corrupt_lines > 200 : 
-            raise ValueError(f"{corrupt_lines} many corrupt lines in file {filename}")
+                amps[i] = amp
+                phases[i] = phase
+            csi = np.concatenate([amps, phases])
+            csis.append(csi)
+        if corrupt_lines > 4000 : 
+            raise ValueError(f"Many ({corrupt_lines}/{lines}) corrupt lines in file {filename}")
+        else : 
+            print(f"Found {corrupt_lines}/{lines} corrupt lines in file {filename}")
         
-    csi = np.array(csi)
+    csis = np.array(csis)
     found_macs = np.array(found_macs)
     if csi_only : 
-        return csi
-    return csi, found_macs
+        return csis
+    return csis, found_macs
 
 
 

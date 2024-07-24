@@ -18,15 +18,9 @@ SemaphoreHandle_t mutex = xSemaphoreCreateMutex();
 
 void _wifi_csi_cb(void *ctx, wifi_csi_info_t *data) {
     xSemaphoreTake(mutex, portMAX_DELAY);
-    
-    // print the received data 
-    
-    
-    
     std::stringstream ss;
 
     wifi_csi_info_t d = data[0];
-    
     char mac[20] = {0};
     sprintf(mac, "%02X:%02X:%02X:%02X:%02X:%02X", d.mac[0], d.mac[1], d.mac[2], d.mac[3], d.mac[4], d.mac[5]);
 
@@ -57,11 +51,8 @@ void _wifi_csi_cb(void *ctx, wifi_csi_info_t *data) {
        << get_steady_clock_timestamp() << ","
        << data->len << ",[";
 
-#if CONFIG_SHOULD_COLLECT_ONLY_LLTF
-    int data_len = 128;
-#else
     int data_len = data->len;
-#endif
+
 
 int8_t *my_ptr;
 #if CSI_RAW
@@ -95,37 +86,32 @@ void _print_csi_csv_header() {
     outprintf(header_str);
 }
 
-
-// Initializes the CSI (Channel State Information) collection with optional configuration based on compile-time flags.
 void csi_init(char *type) {
+
+    // Check if the type is not "AP"
+    if (strcmp(type, "AP") != 0) {
+        ESP_LOGI("CSI_INIT", "Type is not AP, exiting csi_init.");
+        return;
+    }
+    
     project_type = type;
 
-    // The following code block will only be included if CONFIG_SHOULD_COLLECT_CSI is defined.
-    #ifdef CONFIG_SHOULD_COLLECT_CSI
+    ESP_ERROR_CHECK(esp_wifi_set_csi(1));
 
-        // Enable CSI (Channel State Information) collection in ESP Wi-Fi.
-        // This is the main step to start gathering CSI data.
-        ESP_ERROR_CHECK(esp_wifi_set_csi(1)); // `1` to enable, `0` to disable.
+    // @See: https://github.com/espressif/esp-idf/blob/master/components/esp_wifi/include/esp_wifi_types.h#L401
+    wifi_csi_config_t configuration_csi;
+    configuration_csi.lltf_en = 1;
+    configuration_csi.htltf_en = 1;
+    configuration_csi.stbc_htltf2_en = 1;
+    configuration_csi.ltf_merge_en = 1;
+    configuration_csi.channel_filter_en = 0;
+    configuration_csi.manu_scale = 0;
 
-        // @See: https://github.com/espressif/esp-idf/blob/master/components/esp_wifi/include/esp_wifi_types.h#L401
-        wifi_csi_config_t configuration_csi; // Structure to hold the CSI configuration.
-        configuration_csi.lltf_en = 1; // Enable Long Training Field (LTF) information.
-        configuration_csi.htltf_en = 1; // Enable High Throughput Long Training Field (HT-LTF).
-        configuration_csi.stbc_htltf2_en = 1; // Enable Space-Time Block Coding HT-LTF2 (second part).
-        configuration_csi.ltf_merge_en = 1; // Merge different LTFs into a single CSI frame.
-        // Channel filter setting; if disabled (0), all data is captured.
-        configuration_csi.channel_filter_en = 0; 
-        // Manual scaling for CSI values; set to `0` for default behavior.
-        configuration_csi.manu_scale = 0;
+    ESP_ERROR_CHECK(esp_wifi_set_csi_config(&configuration_csi));
+    ESP_ERROR_CHECK(esp_wifi_set_csi_rx_cb(&_wifi_csi_cb, NULL));
 
-        // Apply the CSI configuration to the ESP Wi-Fi system.
-        ESP_ERROR_CHECK(esp_wifi_set_csi_config(&configuration_csi));
-        // Register a callback function to handle received CSI data.
-        // This function will be called whenever CSI data is collected.
-        ESP_ERROR_CHECK(esp_wifi_set_csi_rx_cb(&_wifi_csi_cb, NULL));
+    _print_csi_csv_header();
 
-        _print_csi_csv_header();
-    #endif
 }
 
 #endif //ESP32_CSI_CSI_COMPONENT_H
